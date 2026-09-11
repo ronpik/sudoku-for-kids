@@ -17,12 +17,12 @@ Mobile stacks the board, number entry, undo/erase, and hints. Desktop puts contr
 
 ## Architecture
 
-The app is a static site with no framework, package dependencies, database, API, accounts, cookies, analytics, or browser storage. Serve `dist/` from any static host. Plain HTML/CSS and ES modules keep startup small and deployment portable.
+The app is a static site with no framework, package dependencies, database, API, accounts, cookies, analytics, or browser storage. Authored HTML, CSS, and ES modules live in `src/`. Run `npm run build` to copy them into a clean `dist/` directory, then serve `dist/` from any static host. No transpilation or bundling is needed.
 
-`dist/sudoku.js` is a pure domain module: board configuration, constraint units, duplicate detection, completion, randomized generation, and solution counting. Flat arrays store integers, with zero representing empty cells. Generation permutes a valid solution, then removes clues only when a bounded MRV/bitmask search proves uniqueness. Exhausted searches restore the attempted removal. Clue counts are generation targets, not a claim of formal human difficulty.
+`src/sudoku.js` is a pure domain module: board configuration, constraint units, duplicate detection, completion, randomized generation, and solution counting. Flat arrays store integers, with zero representing empty cells. Generation permutes a valid solution, then removes clues only when a bounded MRV/bitmask search proves uniqueness. Exhausted searches restore the attempted removal. Clue counts are generation targets, not a claim of formal human difficulty.
 
-`dist/puzzle-worker.js` performs generation away from the main thread. `dist/app.js` owns in-memory state and UI actions: size, clues, current values, selection, hints, undo history, and completion. It never needs the generated answer for validation. Worker failure falls back to a short bounded generation pass. Changing size replaces the complete puzzle configuration atomically.
+`src/puzzle-worker.js` performs generation away from the main thread. `src/app.js` owns in-memory state and UI actions: size, clues, current values, selection, hints, undo history, and completion. It never needs the generated answer for validation. Worker failure falls back to a short bounded generation pass. Changing size replaces the complete puzzle configuration atomically.
 
 The optional WebMCP adapter exposes reading and entering numbers through the same actions as the UI, validates input, and is inert in unsupported browsers. No separate data store exists.
 
-`scripts/serve.mjs` is a dependency-free local development server. Node's built-in test runner verifies rules, uniqueness with a separate reference solver, exhaustion safety, and domain rejection. Browser checks cover mobile/desktop interaction, help and replacement dialogs, completion, and exact conflict highlighting.
+`scripts/build.mjs` recreates the generated output using Node filesystem APIs. `scripts/serve.mjs` is a dependency-free local server: `npm run dev` serves source files, while `npm start` rebuilds and serves production output. Node's built-in test runner verifies rules, uniqueness with a separate reference solver, exhaustion safety, and domain rejection. Browser checks cover mobile/desktop interaction, help and replacement dialogs, completion, and exact conflict highlighting.

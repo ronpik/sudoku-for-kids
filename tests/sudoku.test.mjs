@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getConfig, unitsFor, generatePuzzle, findConflicts, countSolutions, isComplete, peersOf } from '../dist/sudoku.js';
+import { getConfig, unitsFor, generatePuzzle, findConflicts, countSolutions, isComplete, peersOf } from '../src/sudoku.js';
 function random(seed) { return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; }; }
 // Independent reference solver deliberately does not reuse the production solver.
 function referenceCount(input, size, limit = 2) {
